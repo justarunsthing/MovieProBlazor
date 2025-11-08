@@ -1,0 +1,4 @@
+﻿.home-style {
+    background: linear-gradient(to right, rgb(181, 53, 132) 0%, rgba(8, 7, 102) 40%, rgb(8, 7, 102) 100%);
+    color: var(--cf-light-color);
+}
