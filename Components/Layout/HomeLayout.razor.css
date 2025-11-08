@@ -1,4 +1,5 @@
 ﻿.home-style {
-    background: linear-gradient(to right, rgb(181, 53, 132) 0%, rgba(8, 7, 102) 40%, rgb(8, 7, 102) 100%);
+    background: linear-gradient(to right, rgba(181, 53, 132, 0.95) 0%, rgba(8, 7, 102, 0.8) 40%, rgba(8, 7, 102, 0.95) 100%),
+                url("/img/NowPlayingBG.jpg");
     color: var(--cf-light-color);
 }
