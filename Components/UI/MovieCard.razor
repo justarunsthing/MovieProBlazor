@@ -10,7 +10,7 @@
                 var parsed = DateTime.TryParse(Movie.ReleaseDate, out var releaseDate);
             }
 
-            Release Date: @(parsed? releaseDate.ToString("MMMM dd, yyyy") : "Unknown");
+            Release Date: @(parsed? releaseDate.ToString("MMMM dd, yyyy") : "Unknown")
         </div>
     </div>
     <div class="movie-card-footer card-footer d-flex justify-content-between">
