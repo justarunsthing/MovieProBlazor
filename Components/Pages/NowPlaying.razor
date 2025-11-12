@@ -1,4 +1,9 @@
 ﻿@page "/now-playing"
+@using System.Net.Http.Json
+@using System.Text.Json
+
+@inject HttpClient http
+@inject IConfiguration config
 
 <PageTitle>Now Playing</PageTitle>
 
@@ -22,5 +27,43 @@
 </div>
 
 @code {
+    private MovieListResponse? nowPlayingMovies;
+    private string? tmdbAccessKey;
+    private bool isLoading = true;
 
+    private readonly JsonSerializerOptions jsonSerializerOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+    };
+
+    // Only runs once
+    protected override async Task OnInitializedAsync()
+    {
+        tmdbAccessKey = config["TmdbAccessKey"];
+
+        if (!string.IsNullOrEmpty(tmdbAccessKey))
+        {
+            string url = "https://api.themoviedb.org/3/movie/now_playing?language=en-US";
+            string baseImageUrl = "https://image.tmdb.org/t/p/w500";
+
+            http.DefaultRequestHeaders.Authorization = new ("Bearer", tmdbAccessKey);
+
+            var response = await http.GetFromJsonAsync<MovieListResponse>(url, jsonSerializerOptions) 
+                           ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve now playing movies");
+
+            foreach (var movie in response.Results)
+            {
+                if (!string.IsNullOrEmpty(movie.PosterPath))
+                {
+                    movie.PosterPath = $"{baseImageUrl}{movie.PosterPath}";
+                }
+                else
+                {
+                    movie.PosterPath = "img/poster.png";
+                }
+            }
+
+            nowPlayingMovies = response;
+        }
+    }
 }
