@@ -1,12 +1,16 @@
 ﻿<div class="movie-card card h-100">
-    <img src="~/img/poster.png" class="card-img-top" alt="Movie Poster"/>
+    <img src="@Movie.PosterPath" class="card-img-top" alt="Movie Poster"/>
 
     <div class="card-body border border-top">
         <div class="card-title fw-bold ln-1">
-            Movie Title
+            @Movie.Title
         </div>
         <div class="card-text lh-1 fst-italic">
-            Release Date: 10/11/2025
+            @{
+                var parsed = DateTime.TryParse(Movie.ReleaseDate, out var releaseDate);
+            }
+
+            Release Date: @(parsed? releaseDate.ToString("MMMM dd, yyyy") : "Unknown");
         </div>
     </div>
     <div class="movie-card-footer card-footer d-flex justify-content-between">
@@ -16,5 +20,6 @@
 </div>
 
 @code {
-
+    [Parameter, EditorRequired]
+    public Movie? Movie { get; set; }
 }
