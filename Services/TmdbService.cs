@@ -1,4 +1,6 @@
 ﻿using System.Text.Json;
+using System.Net.Http.Json;
+using MovieProBlazor.Models;
 
 namespace MovieProBlazor.Services
 {
@@ -20,6 +22,27 @@ namespace MovieProBlazor.Services
             {
                 _http.DefaultRequestHeaders.Authorization = new("Bearer", _tmdbAccessKey);
             }
+        }
+
+        public async Task<MovieListResponse> GetNowPlayingMoviesAsync()
+        {
+            string url = "https://api.themoviedb.org/3/movie/now_playing?language=en-US";
+            var response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
+                ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve now playing movies");
+
+            foreach (var movie in response.Results)
+            {
+                if (!string.IsNullOrEmpty(movie.PosterPath))
+                {
+                    movie.PosterPath = $"https://image/tmdb.org/t/p/w500{movie.PosterPath}";
+                }
+                else
+                {
+                    movie.PosterPath = "img/poster.png";
+                }
+            }
+
+            return response;
         }
     }
 }
