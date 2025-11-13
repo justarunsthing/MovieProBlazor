@@ -13,30 +13,30 @@
         Movies that are currently playing in theaters
     </p>
 
-    <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
-        @if (nowPlayingMovies == null)
-        {
-            <div class="d-flex justify-content-center align-items-center">
-                @if (isLoading)
-                {
-                    <h2 class="text-muted">Loading Now Playing Movies...</h2>
-                }
-                else
-                {
-                    <h2 class="text-danger">Failed to load Now Playing Movies</h2>
-                }
-            </div>
-        }
-        else
-        {
+    @if (nowPlayingMovies == null)
+    {
+        <div class="d-flex justify-content-center align-items-center">
+            @if (isLoading)
+            {
+                <h2 class="text-muted">Loading Now Playing Movies...</h2>
+            }
+            else
+            {
+                <h2 class="text-danger">Failed to load Now Playing Movies</h2>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
             @foreach (var movie in nowPlayingMovies.Results)
             {
                 <div class="col">
                     <MovieCard Movie="movie" />
                 </div>
             }
-        }
-    </div>
+        </div>
+    }
 </div>
 
 @code {
