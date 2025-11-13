@@ -11,9 +11,34 @@
         <p class="lead italic">
             Movies that are currently popular with TMDb users
         </p>
+        <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
+            @if (popularMovies == null)
+            {
+                <div class="d-flex justify-content-center align-items-center">
+                    @if (isLoading)
+                    {
+                        <h2 class="text-muted">Loading Popular Movies...</h2>
+                    }
+                    else
+                    {
+                        <h2 class="text-danger">Failed to load Popular Movies</h2>
+                    }
+                </div>
+            }
+            else
+            {
+                @foreach (var movie in popularMovies.Results)
+                {
+                    <div class="col">
+                        <MovieCard Movie="movie" />
+                    </div>
+                }
+            }
+        </div>
     </div>
 </div>
 
 @code {
-
+    private MovieListResponse? popularMovies;
+    private bool isLoading = true;
 }
