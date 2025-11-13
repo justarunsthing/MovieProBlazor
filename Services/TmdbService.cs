@@ -33,7 +33,7 @@ namespace MovieProBlazor.Services
             {
                 if (!string.IsNullOrEmpty(movie.PosterPath))
                 {
-                    movie.PosterPath = $"https://image/tmdb.org/t/p/w500{movie.PosterPath}";
+                    movie.PosterPath = $"https://image.tmdb.org/t/p/w500{movie.PosterPath}";
                 }
                 else
                 {
