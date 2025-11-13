@@ -1,9 +1,15 @@
-﻿namespace MovieProBlazor.Services
+﻿using System.Text.Json;
+
+namespace MovieProBlazor.Services
 {
     public class TmdbService
     {
         private readonly HttpClient _http;
         private readonly string? _tmdbAccessKey;
+        private readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+        };
 
         public TmdbService(HttpClient httpClient, IConfiguration config)
         {
