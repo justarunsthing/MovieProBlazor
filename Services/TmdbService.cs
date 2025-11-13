@@ -43,5 +43,26 @@ namespace MovieProBlazor.Services
 
             return response;
         }
+
+        public async Task<MovieListResponse> GetPopularMoviesAsync()
+        {
+            string url = "https://api.themoviedb.org/3/movie/popular?language=en-US";
+            var response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
+                ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve popular movies");
+
+            foreach (var movie in response.Results)
+            {
+                if (!string.IsNullOrEmpty(movie.PosterPath))
+                {
+                    movie.PosterPath = $"https://image.tmdb.org/t/p/w500{movie.PosterPath}";
+                }
+                else
+                {
+                    movie.PosterPath = "img/poster.png";
+                }
+            }
+
+            return response;
+        }
     }
 }
