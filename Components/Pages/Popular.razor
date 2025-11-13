@@ -1,5 +1,7 @@
 ﻿@page "/popular"
 
+@inject TmdbService tmdbService
+
 <PageTitle>Popular</PageTitle>
 
 <div class="container-xxl py-3">
@@ -11,34 +13,53 @@
         <p class="lead italic">
             Movies that are currently popular with TMDb users
         </p>
-        <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
-            @if (popularMovies == null)
-            {
-                <div class="d-flex justify-content-center align-items-center">
-                    @if (isLoading)
-                    {
-                        <h2 class="text-muted">Loading Popular Movies...</h2>
-                    }
-                    else
-                    {
-                        <h2 class="text-danger">Failed to load Popular Movies</h2>
-                    }
-                </div>
-            }
-            else
-            {
+
+        @if (popularMovies == null)
+        {
+            <div class="d-flex justify-content-center align-items-center">
+                @if (isLoading)
+                {
+                    <h2 class="text-muted">Loading Popular Movies...</h2>
+                }
+                else
+                {
+                    <h2 class="text-danger">Failed to load Popular Movies</h2>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
                 @foreach (var movie in popularMovies.Results)
                 {
                     <div class="col">
                         <MovieCard Movie="movie" />
                     </div>
                 }
-            }
-        </div>
+            </div>
+        }
     </div>
 </div>
 
 @code {
     private MovieListResponse? popularMovies;
     private bool isLoading = true;
+
+    // Only runs once
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            popularMovies = await tmdbService.GetPopularMoviesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 }
