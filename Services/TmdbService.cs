@@ -7,7 +7,6 @@ namespace MovieProBlazor.Services
     public class TmdbService
     {
         private readonly HttpClient _http;
-        private readonly string? _tmdbAccessKey;
         private readonly JsonSerializerOptions _jsonOptions = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
@@ -16,11 +15,11 @@ namespace MovieProBlazor.Services
         public TmdbService(HttpClient httpClient, IConfiguration config)
         {
             _http = httpClient;
-            _tmdbAccessKey = config["TmdbAccessKey"];
+            string? tmdbAccessKey = config["TmdbAccessKey"];
 
-            if (!string.IsNullOrEmpty(_tmdbAccessKey))
+            if (!string.IsNullOrEmpty(tmdbAccessKey))
             {
-                _http.DefaultRequestHeaders.Authorization = new("Bearer", _tmdbAccessKey);
+                _http.DefaultRequestHeaders.Authorization = new("Bearer", tmdbAccessKey);
             }
         }
 
