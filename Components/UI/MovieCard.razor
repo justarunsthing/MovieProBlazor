@@ -2,15 +2,15 @@
 @inject FavouritesService favouritesService
 
 <div class="movie-card card h-100">
-    <img src="@Movie.PosterPath" class="card-img-top" alt="Movie Poster"/>
+    <img src="@movie.PosterPath" class="card-img-top" alt="Movie Poster"/>
 
     <div class="card-body border border-top">
         <div class="card-title fw-bold ln-1">
-            @Movie.Title
+            @movie.Title
         </div>
         <div class="card-text lh-1 fst-italic">
             @{
-                var parsed = DateTime.TryParse(Movie.ReleaseDate, out var releaseDate);
+                var parsed = DateTime.TryParse(movie.ReleaseDate, out var releaseDate);
             }
 
             Release Date: @(parsed? releaseDate.ToString("MMMM dd, yyyy") : "Unknown")
@@ -18,7 +18,7 @@
     </div>
     <div class="movie-card-footer card-footer d-flex justify-content-between">
         <button class="btn btn-outline-primary" @onclick="ToggleFavourite">
-            Add Fav
+            @(isFavourite ? "Remove Fav" : "Add Fav")
         </button>
         <a href="movie-detail" class="btn btn-primary">More Info</a>
     </div>
@@ -26,15 +26,25 @@
 
 @code {
     [Parameter, EditorRequired]
-    public Movie? Movie { get; set; }
+    public Movie? movie { get; set; }
+
+    private bool isFavourite { get; set; } = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (movie != null)
+        {
+            isFavourite = await favouritesService.IsFavouriteAsync(movie.Id);
+        }
+    }
 
     private async Task ToggleFavourite()
     {
-        if (Movie == null)
+        if (movie == null)
         {
             return;
         }
 
-        await favouritesService.AddToFavouritesAsync(Movie);
+        await favouritesService.AddToFavouritesAsync(movie);
     }
 }
