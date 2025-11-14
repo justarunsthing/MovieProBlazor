@@ -49,5 +49,13 @@ namespace MovieProBlazor.Services
                 await SaveToFavouritesAsync(currentFavourites);
             }
         }
+
+        public async Task RemoveFromFavouritesAsync(Movie movie)
+        {
+            var currentFavourites = await GetFavouritesAsync();
+            currentFavourites = currentFavourites.Where(m => m.Id != movie.Id).ToList();
+
+            await SaveToFavouritesAsync(currentFavourites);
+        }
     }
 }
