@@ -8,7 +8,7 @@ namespace MovieProBlazor.Services
     {
         private readonly string _localStorageKey = "favourites";
 
-        public async Task<List<Movie>> GetFavourites()
+        public async Task<List<Movie>> GetFavouritesAsync()
         {
             List<Movie> movies = [];
 
@@ -26,7 +26,7 @@ namespace MovieProBlazor.Services
         }
 
         // Local storage is an all or nothing add/remove, i.e. cannot add or remove a single item
-        public async Task SaveToFavourites(List<Movie> movies)
+        public async Task SaveToFavouritesAsync(List<Movie> movies)
         {
             try
             {
@@ -39,14 +39,14 @@ namespace MovieProBlazor.Services
             }
         }
 
-        public async Task AddToFavourites(Movie movie)
+        public async Task AddToFavouritesAsync(Movie movie)
         {
-            var currentFavourites = await GetFavourites();
+            var currentFavourites = await GetFavouritesAsync();
 
             if (currentFavourites.All(m => m.Id != movie.Id))
             {
                 currentFavourites.Add(movie);
-                await SaveToFavourites(currentFavourites);
+                await SaveToFavouritesAsync(currentFavourites);
             }
         }
     }
