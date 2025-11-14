@@ -1,4 +1,7 @@
-﻿<div class="movie-card card h-100">
+﻿@using System.Threading.Tasks
+@inject FavouritesService favouritesService
+
+<div class="movie-card card h-100">
     <img src="@Movie.PosterPath" class="card-img-top" alt="Movie Poster"/>
 
     <div class="card-body border border-top">
@@ -14,7 +17,9 @@
         </div>
     </div>
     <div class="movie-card-footer card-footer d-flex justify-content-between">
-        <button class="btn btn-outline-primary">Add Fav</button>
+        <button class="btn btn-outline-primary" @onclick="ToggleFavourite">
+            Add Fav
+        </button>
         <a href="movie-detail" class="btn btn-primary">More Info</a>
     </div>
 </div>
@@ -22,4 +27,14 @@
 @code {
     [Parameter, EditorRequired]
     public Movie? Movie { get; set; }
+
+    private async Task ToggleFavourite()
+    {
+        if (Movie == null)
+        {
+            return;
+        }
+
+        await favouritesService.AddToFavouritesAsync(Movie);
+    }
 }
