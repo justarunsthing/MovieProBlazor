@@ -30,5 +30,19 @@ namespace MovieProBlazor.Services
 
             return movies;
         }
+
+        // Local storage is an all or nothing add/remove
+        public async Task SaveToFavourites(List<Movie> movies)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(movies);
+                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", _localStorageKey, json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
     }
 }
