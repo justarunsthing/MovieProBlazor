@@ -28,6 +28,9 @@
     [Parameter, EditorRequired]
     public Movie? movie { get; set; }
 
+    [Parameter]
+    public EventCallback OnFavouriteToggled { get; set; }
+
     private bool isFavourite { get; set; } = false;
 
     protected override async Task OnParametersSetAsync()
@@ -45,6 +48,17 @@
             return;
         }
 
-        await favouritesService.AddToFavouritesAsync(movie);
+        if (isFavourite)
+        {
+            await favouritesService.RemoveFromFavouritesAsync(movie);
+        }
+        else
+        {
+            await favouritesService.AddToFavouritesAsync(movie);
+
+        }
+
+        // Call back to parent component to refresh the list
+        await OnFavouriteToggled.InvokeAsync();
     }
 }

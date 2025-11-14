@@ -32,7 +32,7 @@
             @foreach (var movie in favouriteMovies)
             {
                 <div class="col">
-                    <MovieCard Movie="movie" />
+                    <MovieCard Movie="movie" OnFavouriteToggled="OnParametersSetAsync"/>
                 </div>
             }
         </div>
