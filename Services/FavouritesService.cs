@@ -4,15 +4,9 @@ using MovieProBlazor.Models;
 
 namespace MovieProBlazor.Services
 {
-    public class FavouritesService
+    public class FavouritesService(IJSRuntime jSRuntime)
     {
         private readonly string _localStorageKey = "favourites";
-        private readonly IJSRuntime _jsRuntime;
-
-        public FavouritesService(IJSRuntime jSRuntime)
-        {
-            _jsRuntime = jSRuntime;
-        }
 
         public async Task<List<Movie>> GetFavourites()
         {
@@ -20,7 +14,7 @@ namespace MovieProBlazor.Services
 
             try
             {
-                var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", _localStorageKey);
+                var json = await jSRuntime.InvokeAsync<string>("localStorage.getItem", _localStorageKey);
                 movies = JsonSerializer.Deserialize<List<Movie>>(json) ?? [];
             }
             catch (Exception ex)
@@ -31,13 +25,13 @@ namespace MovieProBlazor.Services
             return movies;
         }
 
-        // Local storage is an all or nothing add/remove
+        // Local storage is an all or nothing add/remove, i.e. cannot add or remove a single item
         public async Task SaveToFavourites(List<Movie> movies)
         {
             try
             {
                 var json = JsonSerializer.Serialize(movies);
-                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", _localStorageKey, json);
+                await jSRuntime.InvokeVoidAsync("localStorage.setItem", _localStorageKey, json);
             }
             catch (Exception ex)
             {
