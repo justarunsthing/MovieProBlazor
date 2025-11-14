@@ -5,40 +5,38 @@
 <PageTitle>Popular</PageTitle>
 
 <div class="container-xxl py-3">
-    <div class="container-xxl py-3">
-        <h1>
-            <i class="bi bi-stars text-warning"></i>
-            Popular
-        </h1>
-        <p class="lead italic">
-            Movies that are currently popular with TMDb users
-        </p>
+    <h1>
+        <i class="bi bi-stars text-warning"></i>
+        Popular
+    </h1>
+    <p class="lead italic">
+        Movies that are currently popular with TMDb users
+    </p>
 
-        @if (popularMovies == null)
-        {
-            <div class="d-flex justify-content-center align-items-center">
-                @if (isLoading)
-                {
-                    <h2 class="text-muted">Loading Popular Movies...</h2>
-                }
-                else
-                {
-                    <h2 class="text-danger">Failed to load Popular Movies</h2>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
-                @foreach (var movie in popularMovies.Results)
-                {
-                    <div class="col">
-                        <MovieCard Movie="movie" />
-                    </div>
-                }
-            </div>
-        }
-    </div>
+    @if (popularMovies == null)
+    {
+        <div class="d-flex justify-content-center align-items-center">
+            @if (isLoading)
+            {
+                <h2 class="text-muted">Loading Popular Movies...</h2>
+            }
+            else
+            {
+                <h2 class="text-danger">Failed to load Popular Movies</h2>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
+            @foreach (var movie in popularMovies.Results)
+            {
+                <div class="col">
+                    <MovieCard Movie="movie" />
+                </div>
+            }
+        </div>
+    }
 </div>
 
 @code {
