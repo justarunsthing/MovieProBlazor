@@ -38,5 +38,16 @@ namespace MovieProBlazor.Services
                 Console.WriteLine(ex);
             }
         }
+
+        public async Task AddToFavourites(Movie movie)
+        {
+            var currentFavourites = await GetFavourites();
+
+            if (currentFavourites.All(m => m.Id != movie.Id))
+            {
+                currentFavourites.Add(movie);
+                await SaveToFavourites(currentFavourites);
+            }
+        }
     }
 }
