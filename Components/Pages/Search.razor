@@ -1,0 +1,65 @@
+﻿@page "/search"
+
+<PageTitle>Search</PageTitle>
+
+<div class="container-xxl py-3">
+    <h1>
+        <i class="bi bi-stars text-warning"></i>
+        Search Movies
+    </h1>
+    <p class="lead italic">
+        Movies matching "@Query"
+    </p>
+
+    @if (searchResults == null)
+    {
+        <div class="d-flex justify-content-center align-items-center">
+            @if (string.IsNullOrEmpty(Query))
+            {
+                <h2 class="text-muted">
+                    Please enter a search query at the top of the page
+                </h2>
+            }
+            else if (isLoading)
+            {
+                <h2 class="text-muted">
+                    Loading search results...
+                </h2>
+            }
+            else
+            {
+                <h2 class="text-danger">Failed to load search results</h2>
+            }
+        </div>
+    }
+    else
+    {
+        @if (searchResults.TotalResults == 0)
+        {
+            <div class="d-flex justify-content-center align-items-center py-5">
+                <h2 class="text-muted">
+                    No movies found for "@Query"
+                </h2>
+            </div>
+        }
+        else
+        {
+            <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
+                @foreach (var movie in searchResults.Results)
+                {
+                    <div class="col">
+                        <MovieCard Movie="movie" />
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? Query { get; set; }
+
+    private MovieListResponse? searchResults;
+    private bool isLoading = true;
+}
