@@ -40,6 +40,23 @@
 					</NavLink>
 				</li>
 			</ul>
+			<form class="d-flex" role="search">
+				<InputText
+					@bind-Value="Query"
+					name="query"
+					class="form-control form-control-sm me-2"
+					type="search"
+					placeholder="Search Movies..."
+					aria-label="Search Movies"
+				/>
+				<button class="btn btn-sm btn-primary" type="button">
+					Search
+				</button>
+			</form>
 		</div>
 	</div>
 </nav>
+
+@code {
+	private string Query { get; set; }
+}
