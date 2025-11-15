@@ -1,5 +1,7 @@
 ﻿@page "/search"
 
+@inject TmdbService tmdbService
+
 <PageTitle>Search</PageTitle>
 
 <div class="container-xxl py-3">
@@ -62,4 +64,24 @@
 
     private MovieListResponse? searchResults;
     private bool isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(Query))
+        {
+            try
+            {
+                isLoading = true;
+                searchResults = await tmdbService.GetSearchResultsAsync(Query);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+    }
 }
