@@ -31,7 +31,7 @@
     [Parameter]
     public EventCallback OnFavouriteToggled { get; set; }
 
-    private bool isFavourite { get; set; } = false;
+    private bool isFavourite { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -51,10 +51,12 @@
         if (isFavourite)
         {
             await favouritesService.RemoveFromFavouritesAsync(movie);
+            isFavourite = false;
         }
         else
         {
             await favouritesService.AddToFavouritesAsync(movie);
+            isFavourite = true;
 
         }
 
