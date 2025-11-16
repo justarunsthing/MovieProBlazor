@@ -1,0 +1,16 @@
+﻿<!-- Route parameter -->
+@page "/movie/{movieId:int}"
+
+@inject TmdbService tmdbService
+
+<PageTitle>Movie Details</PageTitle>
+
+<h1>
+    <i class="bi bi-film text-primary"></i>
+    Movie Details for ID: @MovieId
+</h1>
+
+@code {
+    [Parameter]
+    public int MovieId { get; set; }
+}
