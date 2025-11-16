@@ -85,5 +85,22 @@ namespace MovieProBlazor.Services
 
             return response;
         }
+
+        public async Task<MovieDetails> GetMovieDetailsAsync(int movieId)
+        {
+            string url = $"https://api.themoviedb.org/3/movie/{movieId}";
+            var response = await _http.GetFromJsonAsync<MovieDetails>(url, _jsonOptions)
+                ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve movie details");
+
+            response.PosterPath = !string.IsNullOrEmpty(response.PosterPath)
+                                  ? $"https://image.tmdb.org/t/p/w500{response.PosterPath}"
+                                  : "img/poster.png";
+
+            response.BackdropPath = !string.IsNullOrEmpty(response.BackdropPath)
+                                    ? $"https://image.tmdb.org/t/p/w500{response.BackdropPath}"
+                                    : "img/backdrop.jpg";
+
+            return response;
+        }
     }
 }
