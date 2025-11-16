@@ -10,8 +10,34 @@
     Movie Details for ID: @MovieId
 </h1>
 
+@if (movie != null)
+{
+    <h2>
+        @movie.Title
+    </h2>
+}
+
 @code {
     [Parameter]
     public int MovieId { get; set; }
+
     private MovieDetails? movie;
+    private bool isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            isLoading = true;
+            movie = await tmdbService.GetMovieDetailsAsync(MovieId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 }
