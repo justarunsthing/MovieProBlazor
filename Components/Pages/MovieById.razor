@@ -3,19 +3,92 @@
 
 @inject TmdbService tmdbService
 
-<PageTitle>Movie Details</PageTitle>
-
-<h1>
-    <i class="bi bi-film text-primary"></i>
-    Movie Details for ID: @MovieId
-</h1>
-
 @if (movie != null)
 {
-    <h2>
-        @movie.Title
-    </h2>
+    <PageTitle>Movie Details</PageTitle>
 }
+
+<div class="container-fluid p-0">
+    @if (movie == null)
+    {
+        <div class="py-5 justify-content-center align-items-center">
+            @if (isLoading)
+            {
+                <h2 class="text-muted">
+                    Loading movie details...
+                </h2>
+            }
+            else
+            {
+                <h2 class="text-muted">
+                    The requested movie could not be found
+                </h2>
+            }
+        </div>
+    }
+    else
+    {
+        <div id="movie-details" style="background: url(@movie.BackdropPath)">
+            <div id="movie-wrapper">
+                <div class="container-xxl py-3">
+                    <div class="row">
+                        <div class="col-12 col-md-4 col-xl-3 text-center text-md-start mb-3">
+                            <img id="movie-poster" class="img-fluid" src="@movie.PosterPath" alt="Movie Poster" />
+                        </div>
+                        <div class="col-12 col-md-8 col-xl-9">
+                            <h3 class="display-6 fw-bold mb-0">
+                                @movie.Title
+                            </h3>
+                            <div class="lead mb-3">
+                                @movie.Tagline
+                            </div>
+                            <div class="hstack gap-2">
+                                @{
+                                    bool dateParsed = DateTime.TryParse(movie.ReleaseDate, out DateTime releaseDate);
+                                }
+
+                                @if (dateParsed)
+                                {
+                                    <span>
+                                        @releaseDate.ToString("MMMM dd, yyyy") |
+                                    </span>
+                                }
+
+                                <span>
+                                    @{
+                                        int hours = movie.Runtime / 60;
+                                        int minutes = movie.Runtime % 60;
+                                    }
+
+                                    @hours hour(s) @minutes minute
+                                </span>
+                            </div>
+                            <div class="hstack gap-2 my-2">
+                                @foreach (var genre in movie.Genres)
+                                {
+                                    <span class="badge text-bg-primary">
+                                        @genre.Name
+                                    </span>
+                                }
+                            </div>
+                            <h5 class="lead fw-bold pt-3 mt-3">
+                                Overview
+                            </h5>
+                            <p>
+                                @movie.Overview
+                            </p>
+                            <div>
+                                <span id="movie-rating">
+                                    User Score: @((movie.VoteAverage * 10).ToString("F2"))%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
     [Parameter]
