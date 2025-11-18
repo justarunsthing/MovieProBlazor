@@ -102,5 +102,16 @@ namespace MovieProBlazor.Services
 
             return response;
         }
+
+        public async Task<Video?> GetMovieTrailer(int movieId)
+        {
+            string url = $"https://api.themoviedb.org/3/movie/{movieId}/videos"; // &language=en-US
+            var response = await _http.GetFromJsonAsync<MovieVideosResponse>(url, _jsonOptions)
+                ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve movie videos");
+
+            return response.Results.FirstOrDefault(v =>
+                v.Site!.Contains("YouTube", StringComparison.OrdinalIgnoreCase)
+                && v.Type!.Contains("Trailer", StringComparison.OrdinalIgnoreCase));
+        }
     }
 }
