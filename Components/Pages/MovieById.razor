@@ -2,6 +2,7 @@
 @page "/movie-details/{movieId:int}"
 
 @inject TmdbService tmdbService
+@inject IJSRuntime JS
 
 @if (movie != null)
 {
@@ -151,6 +152,23 @@
         finally
         {
             isLoading = false;
+        }
+    }
+
+    // After everything is rendered, run this
+    protected override async Task OnAfterRenderAsync(bool isFirstRender)
+    {
+        // Import function 
+        await using var jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "/Components/Pages/MovieById.razor.js");
+
+        if (movieTrailer != null)
+        {
+            string trailerUrl = $"https://www.youtube.com/embed/{movieTrailer.Key}";
+            await jsModule.InvokeVoidAsync("initVideoPlayer", trailerUrl);
+        }
+        else
+        {
+            await jsModule.InvokeVoidAsync("initVideoPlayer", string.Empty);
         }
     }
 }
