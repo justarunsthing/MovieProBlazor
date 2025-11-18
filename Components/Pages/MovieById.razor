@@ -100,6 +100,34 @@
     }
 </div>
 
+<!-- Trailer Modal -->
+<div id="trailer-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content modal-background">
+            <div class="modal-header">
+                <h5 id="modal-title" class="modal-title">
+                    @(movie?.Title ?? "Movie Trailer")
+                </h5>
+                <button type="button" class="ms-auto" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="ratio ratio-16x9">
+                    <iframe id="movie-trailer" src="" allowfullscreen>
+
+                    </iframe>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-warning ms-auto" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @code {
     [Parameter]
     public int MovieId { get; set; }
