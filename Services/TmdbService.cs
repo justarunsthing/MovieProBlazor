@@ -103,7 +103,7 @@ namespace MovieProBlazor.Services
             return response;
         }
 
-        public async Task<Video?> GetMovieTrailer(int movieId)
+        public async Task<Video?> GetMovieTrailerAsync(int movieId)
         {
             string url = $"https://api.themoviedb.org/3/movie/{movieId}/videos"; // &language=en-US
             var response = await _http.GetFromJsonAsync<MovieVideosResponse>(url, _jsonOptions)
