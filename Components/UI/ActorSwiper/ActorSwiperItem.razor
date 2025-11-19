@@ -1,15 +1,19 @@
-﻿<div class="hstack gap-3 align-items-center px-2">
-    <img src="/img/profile.jpg" class="actor-img" />
-    <div>
-        <div class="fw-bold text-nowrap">
-            Actor Name
+﻿@if (Cast != null)
+{
+    <div class="hstack gap-3 align-items-center px-2">
+        <img src="@Cast.ProfilePath" class="actor-img" />
+        <div>
+            <div class="fw-bold text-nowrap">
+                @Cast.Name
+            </div>
+            <div class="text-muted text-nowrap">
+                @Cast.Character
+            </div>
         </div>
-        <div class="text-muted text-nowrap">
-            Character Name
-        </div> 
     </div>
-</div>
+}
 
 @code {
-
+    [Parameter, EditorRequired]
+    public Cast? Cast { get; set; }
 }
