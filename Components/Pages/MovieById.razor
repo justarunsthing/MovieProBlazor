@@ -145,6 +145,7 @@
 
     private MovieDetails? movie;
     private Video? movieTrailer;
+    private List<Cast> casts = [];
     private bool isLoading = true;
 
     protected override async Task OnParametersSetAsync()
@@ -154,6 +155,9 @@
             isLoading = true;
             movie = await tmdbService.GetMovieDetailsAsync(MovieId);
             movieTrailer = await tmdbService.GetMovieTrailerAsync(MovieId);
+
+            var credits = await tmdbService.GetMovieCreditsAsync(MovieId);
+            casts = credits.Casts; // .Take(10).ToList();
         }
         catch (Exception ex)
         {
