@@ -1,6 +1,7 @@
-﻿using System.Text.Json;
-using System.Net.Http.Json;
+﻿using MovieProBlazor.Components.Pages;
 using MovieProBlazor.Models;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace MovieProBlazor.Services
 {
@@ -105,13 +106,36 @@ namespace MovieProBlazor.Services
 
         public async Task<Video?> GetMovieTrailerAsync(int movieId)
         {
-            string url = $"https://api.themoviedb.org/3/movie/{movieId}/videos"; // &language=en-US
+            string url = $"https://api.themoviedb.org/3/movie/{movieId}/videos"; // ?language=en-US
             var response = await _http.GetFromJsonAsync<MovieVideosResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve movie videos");
 
             return response.Results.FirstOrDefault(v =>
                 v.Site!.Contains("YouTube", StringComparison.OrdinalIgnoreCase)
                 && v.Type!.Contains("Trailer", StringComparison.OrdinalIgnoreCase));
+        }
+
+        public async Task<CreditsResponse> GetMovieCreditsAsync(int movieId)
+        { 
+            string url = $"https://api.themoviedb.org/3/movie/{movieId}/credits"; // ?language=en-US
+            var response = await _http.GetFromJsonAsync<CreditsResponse>(url, _jsonOptions)
+                ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve movie credits");
+
+            foreach (var cast in response.Casts)
+            {
+                cast.ProfilePath = !string.IsNullOrEmpty(cast.ProfilePath)
+                                   ? $"https://image.tmdb.org/t/p/w500{cast.ProfilePath}"
+                                   : "img/profile.jpg";
+            }
+
+            foreach (var crew in response.Crew)
+            {
+                crew.ProfilePath = !string.IsNullOrEmpty(crew.ProfilePath)
+                                   ? $"https://image.tmdb.org/t/p/w500{crew.ProfilePath}"
+                                   : "img/profile.jpg";
+            }
+
+            return response;
         }
     }
 }
