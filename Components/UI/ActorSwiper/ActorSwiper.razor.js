@@ -1,16 +1,16 @@
 ﻿// Export means this function can be called by C# code
 export function init(container) {
-    container.querySelector('nav-btn-next').addEventListener('click', () => {
+    container.querySelector('.nav-btn-next').addEventListener('click', () => {
         goToNext(container);
     });
 
-    container.querySelector('nav-btn-previous').addEventListener('click', () => {
+    container.querySelector('.nav-btn-previous').addEventListener('click', () => {
         goToPrevious(container);
     });
 }
 
 function goToNext(container) {
-    const btn = container.querySelector('nav-btn-prev');
+    const btn = container.querySelector('.nav-btn-prev');
     const btnWidth = btn.getBoundingClientRect().right;
     const contentArea = container.querySelector('.swiper-content');
     const items = contentArea.querySelectorAll('.swiper-item');
@@ -26,7 +26,7 @@ function goToNext(container) {
 }
 
 function goToPrevious(container) {
-    const btn = container.querySelector('nav-btn-prev');
+    const btn = container.querySelector('.nav-btn-prev');
     const btnWidth = btn.getBoundingClientRect().right;
     const contentArea = container.querySelector('.swiper-content');
     const items = contentArea.querySelectorAll('.swiper-item');
