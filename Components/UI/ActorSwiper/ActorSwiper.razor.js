@@ -10,7 +10,7 @@ export function init(container) {
 }
 
 function goToNext(container) {
-    const btn = container.querySelector('.nav-btn-prev');
+    const btn = container.querySelector('.nav-btn-previous');
     const btnWidth = btn.getBoundingClientRect().right;
     const contentArea = container.querySelector('.swiper-content');
     const items = contentArea.querySelectorAll('.swiper-item');
@@ -26,7 +26,7 @@ function goToNext(container) {
 }
 
 function goToPrevious(container) {
-    const btn = container.querySelector('.nav-btn-prev');
+    const btn = container.querySelector('.nav-btn-previous');
     const btnWidth = btn.getBoundingClientRect().right;
     const contentArea = container.querySelector('.swiper-content');
     const items = contentArea.querySelectorAll('.swiper-item');
