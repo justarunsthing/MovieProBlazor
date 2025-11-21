@@ -97,9 +97,9 @@ namespace MovieProBlazor.Services
                                   ? $"https://image.tmdb.org/t/p/w500{response.PosterPath}"
                                   : "img/poster.png";
 
-            response.BackdropPath = !string.IsNullOrEmpty(response.BackdropPath)
-                                    ? $"https://image.tmdb.org/t/p/w500{response.BackdropPath}"
-                                    : "img/backdrop.jpg";
+            //response.BackdropPath = !string.IsNullOrEmpty(response.BackdropPath)
+            //                        ? $"https://image.tmdb.org/t/p/w500{response.BackdropPath}"
+            //                        : "img/backdrop.jpg";
 
             return response;
         }
