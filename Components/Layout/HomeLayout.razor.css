@@ -1,5 +1,6 @@
 ﻿.home-style {
-    background: linear-gradient(to right, rgba(181, 53, 132, 0.95) 0%, rgba(8, 7, 102, 0.8) 40%, rgba(8, 7, 102, 0.95) 100%),
-                url("/img/NowPlayingBG.jpg");
+    background: linear-gradient(to right, rgba(6, 26, 61, 0.95) 0%, rgba(3, 83, 164, 0.8) 40%, rgba(0, 109, 170, 0.95) 100%),
+                url("/img/NowPlayingBG.jpg") no-repeat center;
+    background-size: cover;
     color: var(--cf-light-color);
 }
