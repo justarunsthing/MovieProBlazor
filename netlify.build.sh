@@ -1,17 +1,13 @@
 ﻿#!/usr/bin/env bash
 set -e
 
-# Change into a temporary directory so we can download + install .NET
+# install latest .NET8.0 release
 pushd /tmp
-
-# Download Microsoft install script
-wget https://dot.net/v1/dotnet-install.sh
+wget https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh
 
 # Make the script executable
-chmod +x ./dotnet-install.sh
-
-# Install .NET 8 (modify channel if needed in the future)
-./dotnet-install.sh --channel 8.0
+chmod u+x /tmp/dotnet-install.sh
+/tmp/dotnet-install.sh --channel 8.0
 
 # Return to project directory
 popd
