@@ -23,6 +23,11 @@ namespace MovieProBlazor.Services
                 _http.BaseAddress = new Uri("https://api.themoviedb.org/3/");
                 _http.DefaultRequestHeaders.Authorization = new("Bearer", tmdbAccessKey);
             }
+            else
+            {
+                // Deployed to Netlify
+                _http.BaseAddress = new Uri(_http.BaseAddress + "tmdb/");
+            }
         }
 
         public async Task<MovieListResponse> GetNowPlayingMoviesAsync()
