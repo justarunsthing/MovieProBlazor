@@ -97,6 +97,7 @@ namespace MovieProBlazor.Services
                                   ? $"https://image.tmdb.org/t/p/w500{response.PosterPath}"
                                   : "img/poster.png";
 
+            // Some backdrop images makes movie details hard to read
             //response.BackdropPath = !string.IsNullOrEmpty(response.BackdropPath)
             //                        ? $"https://image.tmdb.org/t/p/w500{response.BackdropPath}"
             //                        : "img/backdrop.jpg";
