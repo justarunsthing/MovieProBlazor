@@ -20,13 +20,14 @@ namespace MovieProBlazor.Services
 
             if (!string.IsNullOrEmpty(tmdbAccessKey))
             {
+                _http.BaseAddress = new Uri("https://api.themoviedb.org/3/");
                 _http.DefaultRequestHeaders.Authorization = new("Bearer", tmdbAccessKey);
             }
         }
 
         public async Task<MovieListResponse> GetNowPlayingMoviesAsync()
         {
-            string url = "https://api.themoviedb.org/3/movie/now_playing?language=en-US";
+            string url = "movie/now_playing?language=en-US";
             var response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve now playing movies");
 
@@ -47,7 +48,7 @@ namespace MovieProBlazor.Services
 
         public async Task<MovieListResponse> GetPopularMoviesAsync()
         {
-            string url = "https://api.themoviedb.org/3/movie/popular?language=en-US";
+            string url = "movie/popular?language=en-US";
             var response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve popular movies");
 
@@ -68,7 +69,7 @@ namespace MovieProBlazor.Services
 
         public async Task<MovieListResponse> GetSearchResultsAsync(string query)
         {
-            string url = $"https://api.themoviedb.org/3/search/movie?query={query}&language=en-US";
+            string url = $"search/movie?query={query}&language=en-US";
             var response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve search results");
 
@@ -89,7 +90,7 @@ namespace MovieProBlazor.Services
 
         public async Task<MovieDetails> GetMovieDetailsAsync(int movieId)
         {
-            string url = $"https://api.themoviedb.org/3/movie/{movieId}";
+            string url = $"movie/{movieId}";
             var response = await _http.GetFromJsonAsync<MovieDetails>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve movie details");
 
@@ -107,7 +108,7 @@ namespace MovieProBlazor.Services
 
         public async Task<Video?> GetMovieTrailerAsync(int movieId)
         {
-            string url = $"https://api.themoviedb.org/3/movie/{movieId}/videos"; // ?language=en-US
+            string url = $"movie/{movieId}/videos"; // ?language=en-US
             var response = await _http.GetFromJsonAsync<MovieVideosResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve movie videos");
 
@@ -118,7 +119,7 @@ namespace MovieProBlazor.Services
 
         public async Task<CreditsResponse> GetMovieCreditsAsync(int movieId)
         { 
-            string url = $"https://api.themoviedb.org/3/movie/{movieId}/credits"; // ?language=en-US
+            string url = $"movie/{movieId}/credits"; // ?language=en-US
             var response = await _http.GetFromJsonAsync<CreditsResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve movie credits");
 
