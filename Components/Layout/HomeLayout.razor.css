@@ -1,6 +1,12 @@
 ﻿.home-style {
-    background: linear-gradient(to right, rgba(143, 45, 86, 0.95) 0%, rgba(33, 131, 128, 0.8) 40%, rgba(0, 109, 170, 0.95) 100%),
-                url("/img/NowPlayingBG.jpg") no-repeat center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: #063552;
+    background-image:
+        linear-gradient(to right, rgba(143, 45, 86, 0.95) 0%, rgba(33, 131, 128, 0.8) 40%, rgba(0, 109, 170, 0.95) 100%),
+        url("/img/NowPlayingBG.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
     background-size: cover;
     color: var(--cf-light-color);
 }
