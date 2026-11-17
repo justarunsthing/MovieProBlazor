@@ -13,17 +13,22 @@
         Movies that you have marked as your favourites
     </p>
 
-    @if (favouriteMovies == null)
+    @if (isLoading)
     {
         <div class="d-flex justify-content-center align-items-center">
-            @if (isLoading)
-            {
-                <h2 class="text-muted">Loading Favourite Movies...</h2>
-            }
-            else
-            {
-                <h2 class="text-danger">Failed to load Favourite Movies</h2>
-            }
+            <h2 class="text-muted">Loading Favourite Movies...</h2>
+        </div>
+    }
+    else if (loadFailed)
+    {
+        <div class="d-flex justify-content-center align-items-center">
+            <h2 class="text-danger">Failed to load Favourite Movies</h2>
+        </div>
+    }
+    else if (favouriteMovies.Count == 0)
+    {
+        <div class="d-flex justify-content-center align-items-center">
+            <h2 class="text-muted">No favourites yet</h2>
         </div>
     }
     else
@@ -42,17 +47,21 @@
 @code {
     List<Movie> favouriteMovies = [];
     bool isLoading = true;
+    bool loadFailed;
 
     protected override async Task OnParametersSetAsync()
     {
         try
         {
             isLoading = true;
+            loadFailed = false;
             favouriteMovies = await favouritesService.GetFavouritesAsync();
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
+            loadFailed = true;
+            favouriteMovies = [];
         }
         finally
         {

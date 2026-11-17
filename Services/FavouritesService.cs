@@ -10,19 +10,14 @@ namespace MovieProBlazor.Services
 
         public async Task<List<Movie>> GetFavouritesAsync()
         {
-            List<Movie> movies = [];
+            var json = await jSRuntime.InvokeAsync<string>("localStorage.getItem", _localStorageKey);
 
-            try
+            if (string.IsNullOrEmpty(json))
             {
-                var json = await jSRuntime.InvokeAsync<string>("localStorage.getItem", _localStorageKey);
-                movies = JsonSerializer.Deserialize<List<Movie>>(json) ?? [];
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
+                return [];
             }
 
-            return movies;
+            return JsonSerializer.Deserialize<List<Movie>>(json) ?? [];
         }
 
         // Local storage is an all or nothing add/remove, i.e. cannot add or remove a single item
