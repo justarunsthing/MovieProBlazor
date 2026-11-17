@@ -74,7 +74,7 @@ namespace MovieProBlazor.Services
 
         public async Task<MovieListResponse> GetSearchResultsAsync(string query)
         {
-            string url = $"search/movie?query={query}&language=en-US";
+            string url = $"search/movie?query={Uri.EscapeDataString(query)}&language=en-US";
             var response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve search results");
 
