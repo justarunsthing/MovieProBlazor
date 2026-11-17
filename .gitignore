@@ -3,6 +3,7 @@
 ################################################################################
 
 /.vs
-/bin/Debug/net8.0
-/obj
+/bin/
+/obj/
+/release/
 /wwwroot/appsettings.Development.json
