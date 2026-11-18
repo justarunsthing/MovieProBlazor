@@ -1,5 +1,6 @@
 ﻿<!-- Route parameter -->
 @page "/movie-details/{movieId:int}"
+@implements IAsyncDisposable
 
 @inject TmdbService tmdbService
 @inject IJSRuntime JS
@@ -147,17 +148,24 @@
     private Video? movieTrailer;
     private List<Cast> casts = [];
     private bool isLoading = true;
+    private IJSObjectReference? videoModule;
+    private string? initializedTrailerKey;
 
     protected override async Task OnParametersSetAsync()
     {
         try
         {
             isLoading = true;
-            movie = await tmdbService.GetMovieDetailsAsync(MovieId);
-            movieTrailer = await tmdbService.GetMovieTrailerAsync(MovieId);
 
-            var credits = await tmdbService.GetMovieCreditsAsync(MovieId);
-            casts = credits.Casts; // .Take(10).ToList();
+            var detailsTask = tmdbService.GetMovieDetailsAsync(MovieId);
+            var trailerTask = tmdbService.GetMovieTrailerAsync(MovieId);
+            var creditsTask = tmdbService.GetMovieCreditsAsync(MovieId);
+
+            await Task.WhenAll(detailsTask, trailerTask, creditsTask);
+
+            movie = await detailsTask;
+            movieTrailer = await trailerTask;
+            casts = (await creditsTask).Casts;
         }
         catch (Exception ex)
         {
@@ -169,20 +177,35 @@
         }
     }
 
-    // After everything is rendered, run this
-    protected override async Task OnAfterRenderAsync(bool isFirstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Import function 
-        await using var jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "/Components/Pages/MovieById.razor.js");
+        var trailerKey = movieTrailer?.Key;
 
-        if (movieTrailer != null)
+        if (string.IsNullOrEmpty(trailerKey) || trailerKey == initializedTrailerKey)
         {
-            string trailerUrl = $"https://www.youtube.com/embed/{movieTrailer.Key}";
-            await jsModule.InvokeVoidAsync("initVideoPlayer", trailerUrl);
+            return;
         }
-        else
+
+        videoModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/Components/Pages/MovieById.razor.js");
+        await videoModule.InvokeVoidAsync("initVideoPlayer", $"https://www.youtube.com/embed/{trailerKey}");
+        initializedTrailerKey = trailerKey;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (videoModule is null)
         {
-            await jsModule.InvokeVoidAsync("initVideoPlayer", string.Empty);
+            return;
         }
+
+        try
+        {
+            await videoModule.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+
+        videoModule = null;
     }
 }
