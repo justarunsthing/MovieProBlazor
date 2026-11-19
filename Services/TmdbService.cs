@@ -119,9 +119,14 @@ namespace MovieProBlazor.Services
             var response = await _http.GetFromJsonAsync<MovieVideosResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve movie videos");
 
-            return response.Results.FirstOrDefault(v =>
-                v.Site!.Contains("YouTube", StringComparison.OrdinalIgnoreCase)
-                && v.Type!.Contains("Trailer", StringComparison.OrdinalIgnoreCase));
+            var trailers = response.Results.Where(v =>
+                v.Site?.Contains("YouTube", StringComparison.OrdinalIgnoreCase) == true
+                && v.Type?.Contains("Trailer", StringComparison.OrdinalIgnoreCase) == true);
+
+            return trailers
+                .OrderByDescending(v => v.Official)
+                .ThenByDescending(v => v.Iso6391 == "en")
+                .FirstOrDefault();
         }
 
         public async Task<CreditsResponse> GetMovieCreditsAsync(int movieId)
