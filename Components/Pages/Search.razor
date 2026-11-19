@@ -1,6 +1,7 @@
 ﻿@page "/search"
 
 @inject TmdbService tmdbService
+@inject NavigationManager Navigation
 
 <PageTitle>Search</PageTitle>
 
@@ -54,6 +55,7 @@
                     </div>
                 }
             </div>
+            <MoviePager Page="searchResults.Page" TotalPages="searchResults.TotalPages" Label="Search pages" PageChanged="GoToPage" />
         }
     }
 </div>
@@ -62,8 +64,12 @@
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
 
+    [SupplyParameterFromQuery(Name = "page")]
+    public int PageQuery { get; set; }
+
     private MovieListResponse? searchResults;
     private bool isLoading = true;
+    private int Page => PageQuery < 1 ? 1 : PageQuery;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -72,7 +78,8 @@
             try
             {
                 isLoading = true;
-                searchResults = await tmdbService.GetSearchResultsAsync(Query);
+                searchResults = null;
+                searchResults = await tmdbService.GetSearchResultsAsync(Query, Page);
             }
             catch (Exception ex)
             {
@@ -83,5 +90,13 @@
                 isLoading = false;
             }
         }
+    }
+
+    private void GoToPage(int page)
+    {
+        var query = Uri.EscapeDataString(Query ?? string.Empty);
+        Navigation.NavigateTo(page <= 1
+            ? $"/search?query={query}"
+            : $"/search?query={query}&page={page}");
     }
 }

@@ -1,6 +1,7 @@
 ﻿@page "/now-playing"
 
 @inject TmdbService tmdbService
+@inject NavigationManager Navigation
 
 <PageTitle>Now Playing</PageTitle>
 
@@ -36,20 +37,25 @@
                 </div>
             }
         </div>
+        <MoviePager Page="nowPlayingMovies.Page" TotalPages="nowPlayingMovies.TotalPages" Label="Now playing pages" PageChanged="GoToPage" />
     }
 </div>
 
 @code {
+    [SupplyParameterFromQuery(Name = "page")]
+    public int PageQuery { get; set; }
+
     private MovieListResponse? nowPlayingMovies;
     private bool isLoading = true;
+    private int Page => PageQuery < 1 ? 1 : PageQuery;
 
-    // Only runs once
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         try
         {
             isLoading = true;
-            nowPlayingMovies = await tmdbService.GetNowPlayingMoviesAsync();
+            nowPlayingMovies = null;
+            nowPlayingMovies = await tmdbService.GetNowPlayingMoviesAsync(Page);
         }
         catch (Exception ex)
         {
@@ -59,5 +65,10 @@
         {
             isLoading = false;
         }
+    }
+
+    private void GoToPage(int page)
+    {
+        Navigation.NavigateTo(page <= 1 ? "/now-playing" : $"/now-playing?page={page}");
     }
 }

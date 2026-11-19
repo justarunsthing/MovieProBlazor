@@ -13,6 +13,8 @@ namespace MovieProBlazor.Services
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
         };
 
+        private static int NormalizePage(int page) => page < 1 ? 1 : page;
+
         public TmdbService(HttpClient httpClient, IConfiguration config)
         {
             _http = httpClient;
@@ -30,9 +32,9 @@ namespace MovieProBlazor.Services
             }
         }
 
-        public async Task<MovieListResponse> GetNowPlayingMoviesAsync()
+        public async Task<MovieListResponse> GetNowPlayingMoviesAsync(int page = 1)
         {
-            string url = "movie/now_playing?language=en-US";
+            string url = $"movie/now_playing?language=en-US&page={NormalizePage(page)}";
             var response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve now playing movies");
 
@@ -51,9 +53,9 @@ namespace MovieProBlazor.Services
             return response;
         }
 
-        public async Task<MovieListResponse> GetPopularMoviesAsync()
+        public async Task<MovieListResponse> GetPopularMoviesAsync(int page = 1)
         {
-            string url = "movie/popular?language=en-US";
+            string url = $"movie/popular?language=en-US&page={NormalizePage(page)}";
             var response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve popular movies");
 
@@ -72,9 +74,9 @@ namespace MovieProBlazor.Services
             return response;
         }
 
-        public async Task<MovieListResponse> GetSearchResultsAsync(string query)
+        public async Task<MovieListResponse> GetSearchResultsAsync(string query, int page = 1)
         {
-            string url = $"search/movie?query={Uri.EscapeDataString(query)}&language=en-US";
+            string url = $"search/movie?query={Uri.EscapeDataString(query)}&language=en-US&page={NormalizePage(page)}";
             var response = await _http.GetFromJsonAsync<MovieListResponse>(url, _jsonOptions)
                 ?? throw new HttpIOException(HttpRequestError.InvalidResponse, "Failed to retrieve search results");
 
