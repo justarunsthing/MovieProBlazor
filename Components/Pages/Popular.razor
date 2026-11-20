@@ -2,11 +2,12 @@
 
 @inject TmdbService tmdbService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Popular</PageTitle>
 
 <div class="container-xxl py-3">
-    <h1>
+    <h1 @ref="pageTitle">
         <i class="bi bi-stars text-warning"></i>
         Popular
     </h1>
@@ -29,7 +30,7 @@
     }
     else
     {
-        <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
+        <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 @(isLoading ? "opacity-50 pe-none" : null)" aria-busy="@isLoading">
             @foreach (var movie in popularMovies.Results)
             {
                 <div class="col">
@@ -37,7 +38,7 @@
                 </div>
             }
         </div>
-        <MoviePager Page="popularMovies.Page" TotalPages="popularMovies.TotalPages" Label="Popular pages" PageChanged="GoToPage" />
+        <MoviePager Page="popularMovies.Page" TotalPages="popularMovies.TotalPages" Label="Popular pages" PageChanged="GoToPage" Disabled="isLoading" />
     }
 </div>
 
@@ -47,24 +48,58 @@
 
     private MovieListResponse? popularMovies;
     private bool isLoading = true;
+    private int requestId;
+    private bool scrollToTitle;
+    private ElementReference pageTitle;
     private int Page => PageQuery < 1 ? 1 : PageQuery;
 
     protected override async Task OnParametersSetAsync()
     {
+        var request = ++requestId;
+        var previousPage = popularMovies?.Page;
+
         try
         {
             isLoading = true;
-            popularMovies = null;
-            popularMovies = await tmdbService.GetPopularMoviesAsync(Page);
+            var response = await tmdbService.GetPopularMoviesAsync(Page);
+
+            if (request != requestId)
+            {
+                return;
+            }
+
+            popularMovies = response;
+            scrollToTitle = previousPage is not null && previousPage != response.Page;
         }
         catch (Exception ex)
         {
+            if (request != requestId)
+            {
+                return;
+            }
+
             Console.WriteLine(ex.Message);
+            popularMovies = null;
+            scrollToTitle = false;
         }
         finally
         {
-            isLoading = false;
+            if (request == requestId)
+            {
+                isLoading = false;
+            }
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!scrollToTitle)
+        {
+            return;
+        }
+
+        scrollToTitle = false;
+        await JS.InvokeVoidAsync("scrollToElement", pageTitle);
     }
 
     private void GoToPage(int page)

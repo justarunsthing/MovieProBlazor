@@ -2,11 +2,12 @@
 
 @inject TmdbService tmdbService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Search</PageTitle>
 
 <div class="container-xxl py-3">
-    <h1>
+    <h1 @ref="pageTitle">
         <i class="bi bi-search text-warning"></i>
         Search Movies
     </h1>
@@ -47,7 +48,7 @@
         }
         else
         {
-            <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
+            <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 @(isLoading ? "opacity-50 pe-none" : null)" aria-busy="@isLoading">
                 @foreach (var movie in searchResults.Results)
                 {
                     <div class="col">
@@ -55,7 +56,7 @@
                     </div>
                 }
             </div>
-            <MoviePager Page="searchResults.Page" TotalPages="searchResults.TotalPages" Label="Search pages" PageChanged="GoToPage" />
+            <MoviePager Page="searchResults.Page" TotalPages="searchResults.TotalPages" Label="Search pages" PageChanged="GoToPage" Disabled="isLoading" />
         }
     }
 </div>
@@ -69,27 +70,77 @@
 
     private MovieListResponse? searchResults;
     private bool isLoading = true;
+    private int requestId;
+    private bool scrollToTitle;
+    private string? loadedQuery;
+    private ElementReference pageTitle;
     private int Page => PageQuery < 1 ? 1 : PageQuery;
 
     protected override async Task OnParametersSetAsync()
     {
-        if (!string.IsNullOrEmpty(Query))
+        if (string.IsNullOrEmpty(Query))
         {
-            try
+            requestId++;
+            searchResults = null;
+            loadedQuery = null;
+            isLoading = false;
+            scrollToTitle = false;
+            return;
+        }
+
+        var request = ++requestId;
+        var previousPage = searchResults?.Page;
+        var sameQuery = string.Equals(loadedQuery, Query, StringComparison.Ordinal);
+
+        if (!sameQuery)
+        {
+            searchResults = null;
+        }
+
+        try
+        {
+            isLoading = true;
+            var response = await tmdbService.GetSearchResultsAsync(Query, Page);
+
+            if (request != requestId)
             {
-                isLoading = true;
-                searchResults = null;
-                searchResults = await tmdbService.GetSearchResultsAsync(Query, Page);
+                return;
             }
-            catch (Exception ex)
+
+            searchResults = response;
+            loadedQuery = Query;
+            scrollToTitle = sameQuery && previousPage is not null && previousPage != response.Page;
+        }
+        catch (Exception ex)
+        {
+            if (request != requestId)
             {
-                Console.WriteLine(ex.Message);
+                return;
             }
-            finally
+
+            Console.WriteLine(ex.Message);
+            searchResults = null;
+            loadedQuery = null;
+            scrollToTitle = false;
+        }
+        finally
+        {
+            if (request == requestId)
             {
                 isLoading = false;
             }
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!scrollToTitle)
+        {
+            return;
+        }
+
+        scrollToTitle = false;
+        await JS.InvokeVoidAsync("scrollToElement", pageTitle);
     }
 
     private void GoToPage(int page)

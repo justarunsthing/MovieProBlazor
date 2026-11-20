@@ -30,6 +30,12 @@
                     applyTheme(theme);
                 }
             };
+
+            window.scrollToElement = function (element) {
+                if (element && element.scrollIntoView) {
+                    element.scrollIntoView({ block: "start" });
+                }
+            };
         })();
     </script>
     <title>MoviePro</title>

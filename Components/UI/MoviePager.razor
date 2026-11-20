@@ -2,16 +2,16 @@
 {
     <nav class="mt-4" aria-label="@Label">
         <ul class="pagination justify-content-center mb-0">
-            <li class="page-item @(Page <= 1 ? "disabled" : null)">
-                <button type="button" class="page-link" @onclick="Previous" disabled="@(Page <= 1)">
+            <li class="page-item @(Page <= 1 || Disabled ? "disabled" : null)">
+                <button type="button" class="page-link" @onclick="Previous" disabled="@(Page <= 1 || Disabled)">
                     Previous
                 </button>
             </li>
             <li class="page-item disabled">
                 <span class="page-link">Page @Page of @TotalPages</span>
             </li>
-            <li class="page-item @(Page >= TotalPages ? "disabled" : null)">
-                <button type="button" class="page-link" @onclick="Next" disabled="@(Page >= TotalPages)">
+            <li class="page-item @(Page >= TotalPages || Disabled ? "disabled" : null)">
+                <button type="button" class="page-link" @onclick="Next" disabled="@(Page >= TotalPages || Disabled)">
                     Next
                 </button>
             </li>
@@ -31,6 +31,9 @@
 
     [Parameter]
     public EventCallback<int> PageChanged { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
 
     private Task Previous() => PageChanged.InvokeAsync(Page - 1);
 
