@@ -16,6 +16,19 @@
                 </button>
             </li>
         </ul>
+        <form class="d-flex justify-content-center align-items-center gap-2 mt-3" @onsubmit="GoTo">
+            <label class="mb-0" for="@InputId">Go to page</label>
+            <input id="@InputId"
+                   class="form-control form-control-sm page-jump-input"
+                   type="number"
+                   min="1"
+                   inputmode="numeric"
+                   @bind="pageInput"
+                   @bind:event="oninput"
+                   disabled="@Disabled"
+                   aria-label="Page number" />
+            <button class="btn btn-sm btn-outline-primary" type="submit" disabled="@Disabled">Go</button>
+        </form>
     </nav>
 }
 
@@ -35,7 +48,48 @@
     [Parameter]
     public bool Disabled { get; set; }
 
+    private string pageInput = "1";
+    private int displayedPage;
+    private readonly string InputId = $"page-jump-{Guid.NewGuid():N}";
+
+    protected override void OnParametersSet()
+    {
+        if (displayedPage == Page)
+        {
+            return;
+        }
+
+        displayedPage = Page < 1 ? 1 : Page;
+        pageInput = displayedPage.ToString();
+    }
+
     private Task Previous() => PageChanged.InvokeAsync(Page - 1);
 
     private Task Next() => PageChanged.InvokeAsync(Page + 1);
+
+    private Task GoTo()
+    {
+        if (!int.TryParse(pageInput, out var page))
+        {
+            page = Page;
+        }
+
+        if (page < 1)
+        {
+            page = 1;
+        }
+
+        if (page > TotalPages)
+        {
+            page = TotalPages;
+        }
+
+        pageInput = page.ToString();
+        if (page == Page)
+        {
+            return Task.CompletedTask;
+        }
+
+        return PageChanged.InvokeAsync(page);
+    }
 }
