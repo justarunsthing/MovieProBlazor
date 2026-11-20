@@ -15,7 +15,8 @@ namespace MovieProBlazor.Services
             await _gate.WaitAsync();
             try
             {
-                return await LoadFavouritesAsync();
+                // Callers must not be able to add, remove, or clear the cached list.
+                return (await LoadFavouritesAsync()).ToList();
             }
             finally
             {
@@ -31,7 +32,7 @@ namespace MovieProBlazor.Services
             {
                 if (await TryPersistAsync(movies))
                 {
-                    _favourites = movies;
+                    _favourites = movies.ToList();
                 }
             }
             finally
