@@ -20,6 +20,12 @@
                     Loading movie details...
                 </h2>
             }
+            else if (loadFailed)
+            {
+                <h2 class="text-danger">
+                    Failed to load movie details
+                </h2>
+            }
             else
             {
                 <h2 class="text-muted">
@@ -148,33 +154,112 @@
     private Video? movieTrailer;
     private List<Cast> casts = [];
     private bool isLoading = true;
+    private bool loadFailed;
+    private int requestId;
     private IJSObjectReference? videoModule;
     private string? initializedTrailerKey;
 
     protected override async Task OnParametersSetAsync()
     {
+        var request = ++requestId;
+        var requestedId = MovieId;
+
+        isLoading = true;
+        loadFailed = false;
+        movie = null;
+        movieTrailer = null;
+        casts = [];
+
+        var detailsTask = tmdbService.GetMovieDetailsAsync(requestedId);
+        var trailerTask = tmdbService.GetMovieTrailerAsync(requestedId);
+        var creditsTask = tmdbService.GetMovieCreditsAsync(requestedId);
+
         try
         {
-            isLoading = true;
+            try
+            {
+                movie = await detailsTask;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                await ObserveAsync(trailerTask);
+                await ObserveAsync(creditsTask);
 
-            var detailsTask = tmdbService.GetMovieDetailsAsync(MovieId);
-            var trailerTask = tmdbService.GetMovieTrailerAsync(MovieId);
-            var creditsTask = tmdbService.GetMovieCreditsAsync(MovieId);
+                if (request != requestId)
+                {
+                    return;
+                }
 
-            await Task.WhenAll(detailsTask, trailerTask, creditsTask);
+                movie = null;
+                loadFailed = !IsNotFound(ex);
+                return;
+            }
 
-            movie = await detailsTask;
-            movieTrailer = await trailerTask;
-            casts = (await creditsTask).Casts;
+            if (request != requestId)
+            {
+                return;
+            }
+
+            try
+            {
+                movieTrailer = await trailerTask;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                movieTrailer = null;
+            }
+
+            if (request != requestId)
+            {
+                return;
+            }
+
+            try
+            {
+                casts = (await creditsTask).Casts;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                casts = [];
+            }
+        }
+        finally
+        {
+            if (request == requestId)
+            {
+                isLoading = false;
+            }
+        }
+    }
+
+    private static async Task ObserveAsync(Task task)
+    {
+        try
+        {
+            await task;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-        finally
+    }
+
+    private static bool IsNotFound(Exception ex)
+    {
+        if (ex is HttpRequestException { StatusCode: System.Net.HttpStatusCode.NotFound })
         {
-            isLoading = false;
+            return true;
         }
+
+        if (ex is AggregateException aggregate)
+        {
+            return aggregate.InnerExceptions.Any(IsNotFound);
+        }
+
+        return ex.InnerException is not null && IsNotFound(ex.InnerException);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
